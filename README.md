@@ -38,6 +38,12 @@ The API documentation (and UI testing tool) is available at:
 - [Swagger UI](http://localhost:8080/swagger-ui/index.html)
 - If the link does not work, you can directly access it using the following URL: `http://localhost:8080/swagger-ui/index.html`
 
+## Class Generation
+The classes in this project are generated from a Openapi YAML file. This ensures that the client and server models stay in sync with the API definitions.
+
+## Usage
+Examples of how to use the API are available in the Swagger UI documentation. The API specification is provided in YAML format located at `src/main/resources/openapi/openapi.yaml`.
+
 ## Testing
 Instructions for running tests:
 
@@ -50,9 +56,6 @@ Instructions for running tests:
     ```sh
     mvn verify
     ```
-
-## Usage
-Examples of how to use the API are available in the Swagger UI documentation. The API specification is provided in YAML format located at `src/main/resources/openapi/openapi.yaml`.
 
 ## Authors
 - Kacper
