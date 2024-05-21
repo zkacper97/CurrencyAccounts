@@ -16,7 +16,7 @@ Instructions for installing the project:
     ```
 2. Navigate to the project directory:
     ```sh
-    cd currency-accounts
+    cd CurrencyAccounts
     ```
 3. Install dependencies and build the project:
     ```sh
