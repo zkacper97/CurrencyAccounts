@@ -34,7 +34,7 @@ Instructions for running the project:
 Once started, the application will be available at `http://localhost:8080`.
 
 ## API Documentation
-The API documentation is available at:
+The API documentation (and UI testing tool) is available at:
 - [Swagger UI](http://localhost:8080/swagger-ui/index.html)
 - If the link does not work, you can directly access it using the following URL: `http://localhost:8080/swagger-ui/index.html`
 
