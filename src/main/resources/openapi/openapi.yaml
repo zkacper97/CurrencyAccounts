@@ -1,0 +1,182 @@
+openapi: 3.0.0
+info:
+  title: Currency Accounts API
+  description: API for managing currency accounts and currency exchange
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /accounts:
+    post:
+      summary: Create a new user account
+      description: Creates a new user account with provided details
+      operationId: createUserAccount
+      tags:
+        - Accounts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAccountRequest"
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /accounts/{pesel}:
+    get:
+      summary: Get information about a specific user account
+      description: Retrieves information about a user account by its PESEL
+      operationId: getUserAccountByPesel
+      tags:
+        - Accounts
+      parameters:
+        - name: pesel
+          in: path
+          required: true
+          description: PESEL of the user
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccount'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found. The account with the specified PESEL does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /exchange:
+    post:
+      summary: Exchange currency
+      description: Exchanges specified amount of currency from one to another
+      operationId: exchangeCurrency
+      tags:
+        - Exchange
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CurrencyExchangeRequest"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccount'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found. The account with the specified PESEL does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    Currency:
+      type: string
+      enum:
+        - PLN
+        - USD
+    UserAccount:
+      type: object
+      properties:
+        pesel:
+          type: string
+        firstName:
+          type: string
+          minLength: 3
+        lastName:
+          type: string
+          minLength: 3
+        balancePLN:
+          type: number
+          format: decimal
+        balanceUSD:
+          type: number
+          format: decimal
+    CreateAccountRequest:
+      type: object
+      required:
+        - pesel
+        - firstName
+        - lastName
+        - initialBalancePLN
+      properties:
+        pesel:
+          type: string
+        firstName:
+          type: string
+          minLength: 3
+        lastName:
+          type: string
+          minLength: 3
+        initialBalancePLN:
+          type: number
+          minimum: 0
+    CurrencyExchangeRequest:
+      type: object
+      required:
+        - pesel
+        - amount
+        - fromCurrency
+        - toCurrency
+      properties:
+        pesel:
+          type: string
+        amount:
+          type: number
+          minimum: 0
+        fromCurrency:
+          $ref: "#/components/schemas/Currency"
+        toCurrency:
+          $ref: "#/components/schemas/Currency"
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: number
+        message:
+          type: string
+        timestamp:
+          type: string
