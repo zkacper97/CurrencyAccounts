@@ -166,7 +166,7 @@ components:
           type: string
         amount:
           type: number
-          minimum: 0
+          minimum: 1
         fromCurrency:
           $ref: "#/components/schemas/Currency"
         toCurrency:

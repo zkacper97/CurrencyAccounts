@@ -1,14 +1,10 @@
 package org.currency.accounts.service;
 
-import org.currency.accounts.client.CurrencyExchangeClient;
-import org.currency.accounts.exception.custom.CurrencyExchangeFailedException;
 import org.currency.accounts.exception.custom.InsufficientFundsException;
 import org.currency.accounts.exception.custom.SameCurrencyExchangeException;
 import org.currency.accounts.exception.custom.UserNotFoundException;
 import org.currency.accounts.model.Account;
-import org.currency.accounts.model.CurrencyRate;
 import org.currency.accounts.model.Exchange;
-import org.currency.accounts.model.ExchangeCurrency;
 import org.currency.accounts.repository.AccountRepository;
 import org.currency.accounts.utils.CurrencyAccountsHelper;
 import org.junit.jupiter.api.Test;
@@ -18,13 +14,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import static org.currency.accounts.model.CurrencyCode.PLN;
 import static org.currency.accounts.model.CurrencyCode.USD;
-import static org.currency.accounts.utils.CurrencyAccountsHelper.*;
+import static org.currency.accounts.utils.CurrencyAccountsHelper.AMOUNT;
+import static org.currency.accounts.utils.CurrencyAccountsHelper.EXCHANGE_RATE;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -33,7 +28,7 @@ import static org.mockito.Mockito.when;
 class CurrencyCodeExchangeServiceTest {
 
     @Mock
-    private CurrencyExchangeClient currencyExchangeClient;
+    private ExchangeRatesService exchangeRatesService;
 
     @Mock
     private AccountRepository accountRepository;
@@ -48,7 +43,7 @@ class CurrencyCodeExchangeServiceTest {
         Exchange exchangeBody = CurrencyAccountsHelper.createExchange(AMOUNT, PLN, USD);
 
         mockGetAccountResponse(userAccount);
-        mockCurrencyExchangeClientResponse();
+        mockExchangeRatesServiceResponse();
 
         // when
         Account updatedAccount = currencyExchangeService.exchangeCurrency(exchangeBody);
@@ -66,7 +61,7 @@ class CurrencyCodeExchangeServiceTest {
         Exchange exchangeBody = CurrencyAccountsHelper.createExchange(AMOUNT, USD, PLN);
 
         mockGetAccountResponse(userAccount);
-        mockCurrencyExchangeClientResponse();
+        mockExchangeRatesServiceResponse();
 
         // when
         Account updatedAccount = currencyExchangeService.exchangeCurrency(exchangeBody);
@@ -85,25 +80,10 @@ class CurrencyCodeExchangeServiceTest {
                 CurrencyAccountsHelper.createExchange(BigDecimal.valueOf(2000), PLN, USD);
 
         mockGetAccountResponse(userAccount);
-        mockCurrencyExchangeClientResponse();
+        mockExchangeRatesServiceResponse();
 
         // when, then
         assertThrows(InsufficientFundsException.class,
-                () -> currencyExchangeService.exchangeCurrency(exchangeBody));
-    }
-
-    @Test
-    void shouldThrowCurrencyExchangeFailedException() {
-        // given
-        Account userAccount = CurrencyAccountsHelper.createAccount();
-        Exchange exchangeBody =
-                CurrencyAccountsHelper.createExchange(AMOUNT, PLN, USD);
-
-        mockGetAccountResponse(userAccount);
-        mockEmptyCurrencyExchangeClientResponse();
-
-        // when, then
-        assertThrows(CurrencyExchangeFailedException.class,
                 () -> currencyExchangeService.exchangeCurrency(exchangeBody));
     }
 
@@ -142,14 +122,7 @@ class CurrencyCodeExchangeServiceTest {
         when(accountRepository.findById(anyString())).thenReturn(Optional.empty());
     }
 
-    private void mockCurrencyExchangeClientResponse() {
-        when(currencyExchangeClient.getExchangeRates())
-                .thenReturn(new ExchangeCurrency(CURRENCY_NAME, CURRENCY_CODE,
-                        List.of(new CurrencyRate(EXCHANGE_RATE_NO, LocalDate.now(), EXCHANGE_RATE))));
-    }
-
-    private void mockEmptyCurrencyExchangeClientResponse() {
-        when(currencyExchangeClient.getExchangeRates())
-                .thenReturn(null);
+    private void mockExchangeRatesServiceResponse() {
+        when(exchangeRatesService.getActualRate()).thenReturn(EXCHANGE_RATE);
     }
 }
